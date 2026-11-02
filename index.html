@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SecureGate™ 9000 — Are You Human?</title>
+<style>
+  /* ✦ THE DESIGN REBELS ✦ — Glitch & Giggle — "The CAPTCHA from Hell" ✦
+     Every design decision below is intentional. And wrong. */
+  *{box-sizing:border-box;user-select:none}
+  html,body{margin:0}
+  body{
+    min-height:100vh;
+    font-family:"Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
+    color:#2b00ff;
+    background:#ff00ff;
+    animation:bgcycle 10s linear infinite;
+    cursor:help;
+    overflow-x:hidden;
+    padding:14px 10px 120px;
+  }
+  @keyframes bgcycle{
+    0%{background:#ff00ff}20%{background:#00ffff}40%{background:#ffff00}
+    60%{background:#39ff14}80%{background:#ff6a00}100%{background:#ff00ff}
+  }
+  .wrap{
+    max-width:660px;margin:12px auto;padding:18px;
+    background:#c8ffe9;border:9px dotted #e00000;
+    box-shadow:14px 14px 0 #6a00ff;
+    transform:rotate(-1.2deg);
+    transition:transform .6s;
+  }
+  .wrap.r1{transform:rotate(180deg)}
+  .wrap.r2{transform:rotate(90deg) scale(.8)}
+  header{text-align:center}
+  h1{
+    font-family:Impact,"Arial Black",fantasy;font-size:40px;margin:0;
+    color:#fffb8f;text-shadow:3px 3px 0 #fff,-2px -2px 0 #fff;letter-spacing:1px;
+  }
+  h2{font-family:Papyrus,fantasy;font-size:24px;color:#ff7bd0;margin:14px 0 6px}
+  h3{font-size:13px;color:#b9b9ff}
+  p{line-height:1.1}
+  .tiny{font-size:10px;color:#d4d49a}
+  .blink{animation:blink 1.3s steps(2,start) infinite}
+  @keyframes blink{to{visibility:hidden}}
+  .spin{display:inline-block;animation:spin 3s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .marq{overflow:hidden;white-space:nowrap;background:#000;color:#0f0;font-family:"Courier New",monospace;font-size:13px;border:2px solid #f0f;margin:8px 0}
+  .marq span{display:inline-block;padding-left:100%;animation:marq 14s linear infinite}
+  @keyframes marq{to{transform:translateX(-100%)}}
+
+  .meter{display:flex;align-items:center;gap:6px;font-size:11px;color:#000}
+  .meterbar{flex:1;height:14px;border:2px solid #000;background:#fff}
+  #hum{height:100%;width:100%;background:linear-gradient(90deg,red,yellow,lime);transition:width .4s}
+  #step{font-size:12px;color:#9a9a00;margin:10px 0 0}
+  #stage{min-height:230px;margin-top:6px;padding:10px;background:#fff5b8;border:5px groove #00a;position:relative}
+
+  .btn{
+    font:inherit;font-size:18px;padding:8px 14px;margin:6px 4px;
+    background:#c0c0c0;border:5px outset #8a8a8a;color:#7a7a7a;cursor:not-allowed;
+    transition:transform .15s;
+  }
+  .btn:hover{background:#ff0000;color:#00ff00;transform:rotate(3deg) scale(1.06)}
+  .btn:active{border-style:inset}
+  .big{font-size:26px;font-family:Impact,fantasy;color:#00e;background:#9cf}
+  .green{background:#27ff27;color:#27ff27}
+  .tinyb{font-size:9px;padding:2px 4px;border-width:2px}
+  .inp{
+    font:inherit;font-size:22px;width:100%;margin:8px 0;padding:6px;
+    border:5px ridge #ff00ff;background:#ffffcc;color:#f1f1a0;caret-color:#f00;
+  }
+  label{display:block;font-size:13px;color:#d14;margin-top:8px}
+  .bar{height:26px;border:3px solid #000;background:#fff;margin:8px 0}
+  #hb,#pb{height:100%;width:0;background:repeating-linear-gradient(45deg,#f0f,#f0f 10px,#0ff 10px,#0ff 20px)}
+  #grid{display:grid;grid-template-columns:repeat(3,92px);gap:4px;justify-content:center;margin:8px 0}
+  .tile{width:92px;height:92px;font-size:46px;border:3px solid #333;background:#e8e8e8;cursor:crosshair;transition:transform .2s}
+  .tile.sel{outline:6px solid #f00;transform:scale(.82) rotate(8deg)}
+  canvas{display:block;width:100%;max-width:360px;border:4px dashed #00f}
+  .err{color:#e00;font-size:17px;font-weight:bold;margin:4px 0}
+  .shake{animation:shake .4s}
+  @keyframes shake{20%{transform:translateX(-12px) rotate(-3deg)}40%{transform:translateX(12px) rotate(3deg)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+  .ok{color:#0a0;font-family:Impact,fantasy}
+  .pop{background:#fff;border:6px ridge red;padding:20px;font-size:28px;color:#f00;text-align:center}
+  footer{margin-top:14px;font-size:9px;color:#9fd8c0;text-align:center}
+  .linkish{color:#bbf;text-decoration:underline;font-size:10px;cursor:wait;background:none;border:0;font-family:inherit}
+
+  #cookie{
+    position:fixed;left:0;right:0;bottom:0;background:#111;color:#fff;
+    padding:12px;font-family:Arial,sans-serif;font-size:12px;z-index:90;
+    display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:5px solid #f0f;
+  }
+  #cookie button{padding:5px 9px;font-size:11px;cursor:pointer}
+  #cx{position:absolute;right:6px;top:2px;font-size:8px;padding:0 2px;border:0;background:#222;color:#555}
+  #toasts{position:fixed;top:10px;right:10px;z-index:100;display:flex;flex-direction:column;gap:8px;max-width:260px}
+  .toast{background:#fff;border:4px double #f00;padding:8px;font-size:13px;color:#c00;font-weight:bold;animation:pop .3s}
+  @keyframes pop{from{transform:scale(0) rotate(40deg)}}
+  #trail{position:fixed;left:0;top:0;font-size:34px;pointer-events:none;z-index:999}
+  @media (hover:none){#trail{display:none}}
+  @media (prefers-reduced-motion:reduce){body,.blink,.spin,.marq span{animation:none!important}}
+  @media (max-width:520px){h1{font-size:28px}#grid{grid-template-columns:repeat(3,78px)}.tile{width:78px;height:78px;font-size:38px}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <header>
+    <h1><span class="spin">🛡️</span> SecureGate™ 9000™ PRO MAX <span class="blink">(BETA)</span></h1>
+    <div class="tiny">Protecting you from yourself since last Tuesday.</div>
+  </header>
+
+  <div class="marq"><span>⚠ WARNING: BOTS ARE EVERYWHERE ⚠ BOTS ARE IN THE WALLS ⚠ YOUR TOASTER MAY BE A BOT ⚠ IF YOU ARE READING THIS YOU MAY BE A BOT ⚠ PLEASE REMAIN CALM AND SUSPICIOUS ⚠</span></div>
+
+  <div class="meter">Humanity: <div class="meterbar"><div id="hum"></div></div> <b id="humtxt">100%</b></div>
+  <div class="tiny" id="queue">You are #4,382 in line. Estimated wait: 3–5 business years.</div>
+  <div id="step"></div>
+
+  <div id="stage"></div>
+
+  <div style="text-align:center;margin-top:8px">
+    <button class="linkish" id="easy">Easy Mode (makes things easier)</button> |
+    <button class="linkish" id="help">Need help?</button>
+  </div>
+  <footer>© 2009 SecureGate™ Ltd. Not responsible for existential crises. All your clicks are belong to us.</footer>
+</div>
+
+<div id="cookie">
+  <button id="cx">x</button>
+  <span>🍪 We use cookies. And crumbs. And your fingerprints. By existing you accept everything.</span>
+  <button id="ck1">Accept all</button>
+  <button id="ck2">Accept all (but sadder)</button>
+</div>
+<div id="toasts"></div>
+<div id="trail">🤖</div>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const rand = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+  const pick = a => a[rand(0,a.length-1)];
+  const stage = $('#stage');
+
+  let cleanups = [], clicks = 0, fails = 0, loops = 0;
+  let flowIdx = 0, pos = -1, stageNo = 0, humBase = 100;
+  const flows = [[0,1,2,3,4,5,6,7,8],[4,6,8]];
+
+  /* ---------- helpers ---------- */
+  function toast(msg, ms){
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.style.transform = 'rotate(' + rand(-6,6) + 'deg)';
+    t.textContent = msg;
+    $('#toasts').appendChild(t);
+    setTimeout(() => t.remove(), ms || 3800);
+  }
+  function say(text, bad){
+    const m = $('#msg'); if(!m) return;
+    m.className = bad ? 'err' : 'tiny';
+    m.textContent = text;
+  }
+  function fail(text){
+    fails++;
+    say(text, true);
+    const a = $('#app');
+    a.classList.remove('shake'); void a.offsetWidth; a.classList.add('shake');
+  }
+  function setBase(v){ humBase = Math.max(12, v); }
+
+  /* ---------- flow control ---------- */
+  function next(){
+    cleanups.forEach(f => f()); cleanups = [];
+    pos++;
+    const idx = flows[flowIdx][pos];
+    if(idx === undefined){ s9(); return; }
+    stageNo++;
+    $('#step').textContent = 'Step ' + stageNo + ' of ' + pick(['7','12','∞','maybe 9','π','404','???']);
+    if(stageNo > 1) setBase(humBase - 10);
+    S[idx]();
+  }
+
+  /* ---------- STAGE 0: runaway enter button ---------- */
+  function s0(){
+    stage.innerHTML =
+      '<h2>Welcome to <u>TotallyNormalWebsite.com</u></h2>' +
+      '<p class="tiny">Before entering, you must prove you are human. This takes about 30 seconds. (Estimated by robots.)</p>' +
+      '<div id="arena" style="position:relative;height:200px;border:3px dashed #f0f;margin-top:10px">' +
+      '<button class="btn big" id="enter" style="position:absolute;left:30%;top:40%">ENTER WEBSITE</button></div>';
+    let dodges = 0;
+    const b = $('#enter'), arena = $('#arena');
+    const lines = ['NOPE','too slow','ENTER WEBSITE?','you wish','catch me','almost','try harder','👀'];
+    function dodge(e){
+      if(dodges >= 6){ b.textContent = 'ok fine, click me'; return; }
+      if(e && e.preventDefault) e.preventDefault();
+      dodges++;
+      b.textContent = pick(lines);
+      const maxX = Math.max(0, arena.clientWidth - b.offsetWidth);
+      const maxY = Math.max(0, arena.clientHeight - b.offsetHeight);
+      b.style.left = rand(0,maxX) + 'px';
+      b.style.top = rand(0,maxY) + 'px';
+    }
+    b.addEventListener('mouseenter', dodge);
+    b.addEventListener('touchstart', dodge, {passive:false});
+    b.addEventListener('click', () => { if(dodges < 6){ dodge(); return; } next(); });
+  }
+
+  /* ---------- STAGE 1: the shy checkbox ---------- */
+  function s1(){
+    stage.innerHTML =
+      '<h2>Confirm Non-Robotness</h2>' +
+      '<div id="cbArea" style="position:relative;height:190px;border:4px double #00f;background:#fff">' +
+      '<label id="cbl" style="position:absolute;left:20px;top:20px;margin:0;color:#c8c8c8"><input type="checkbox" id="cb" style="width:12px;height:12px"> <span id="cbt">I am not a robot</span></label></div>' +
+      '<p id="msg" class="tiny">Click the box. Gently. Humanly.</p>';
+    let good = 0, last = 0;
+    const cb = $('#cb'), lab = $('#cbl'), area = $('#cbArea');
+    const replies = [
+      'Hmm. That is exactly what a robot would click.',
+      'Analyzing your mouse movement… too smooth.',
+      'Your click had 0.3% too much confidence. Again, but more human.',
+      'Checking your vibes… vibes inconclusive.',
+      'Almost there. Please click one more time, but sadly.'
+    ];
+    cb.addEventListener('click', () => {
+      const now = Date.now();
+      if(now - last < 1500){
+        fail('Too fast. Robot speed detected. (Also too slow. Be in between.)');
+        last = now; setTimeout(() => cb.checked = false, 400); return;
+      }
+      last = now;
+      good++;
+      if(good >= 5){
+        say('Verifying…  🔄  Please wait while we judge you.');
+        setTimeout(() => { say('Verified* (*pending further review)'); setTimeout(next, 1100); }, 1800);
+        return;
+      }
+      say(replies[good-1], true);
+      fails++;
+      setTimeout(() => {
+        cb.checked = false;
+        const sz = rand(8,38);
+        cb.style.width = cb.style.height = sz + 'px';
+        $('#cbt').textContent = pick(['I am not a robot','I am a robot (click to disagree)','I might be a robot','I am 4 raccoons in a coat','Not a robot (probably)']);
+        lab.style.left = rand(5, Math.max(10, area.clientWidth - 220)) + 'px';
+        lab.style.top = rand(5, area.clientHeight - 45) + 'px';
+      }, 700);
+    });
+  }
+
+  /* ---------- STAGE 2: unreadable text captcha ---------- */
+  function s2(){
+    stage.innerHTML =
+      '<h2>Type the characters you see (or think you see)</h2>' +
+      '<canvas id="cv" width="360" height="110"></canvas>' +
+      '<button class="btn tinyb" id="rf" title="Refresh">⟳</button>' +
+      '<input id="ans" class="inp" autocomplete="off" placeholder="type here…" style="direction:rtl;unicode-bidi:bidi-override">' +
+      '<button class="btn" id="sub">Maybe Submit</button>' +
+      '<p id="msg" class="tiny">Case-sensitive, except when it isn’t. Spaces count. Unless they don’t. Captcha refreshes when it gets bored.</p>';
+    let tries = 0;
+    function draw(){
+      const c = $('#cv'); if(!c) return;
+      const x = c.getContext('2d');
+      x.fillStyle = 'hsl(' + rand(0,360) + ',70%,' + rand(60,80) + '%)';
+      x.fillRect(0,0,c.width,c.height);
+      for(let i=0;i<9;i++){
+        x.strokeStyle = 'hsl(' + rand(0,360) + ',60%,' + rand(40,70) + '%)';
+        x.lineWidth = rand(1,6);
+        x.beginPath();
+        x.moveTo(rand(0,360),rand(0,110));
+        x.bezierCurveTo(rand(0,360),rand(0,110),rand(0,360),rand(0,110),rand(0,360),rand(0,110));
+        x.stroke();
+      }
+      const chars = 'lI1O0oQ5S2Z8B6G9gqpbdRrnmwvVuUWM'.split('');
+      for(let i=0;i<8;i++){
+        x.save();
+        x.translate(18 + i*42 + rand(-8,8), 62 + rand(-20,20));
+        x.rotate(rand(-70,70) * Math.PI/180);
+        x.font = rand(28,64) + 'px ' + pick(['serif','monospace','cursive','fantasy','Impact']);
+        x.fillStyle = 'hsl(' + rand(0,360) + ',60%,' + rand(35,75) + '%)';
+        x.fillText(pick(chars),0,0);
+        x.restore();
+      }
+    }
+    draw();
+    const iv = setInterval(() => { draw(); }, 5000);
+    cleanups.push(() => clearInterval(iv));
+    $('#rf').onclick = () => { draw(); toast('Refreshed. Your progress has been refreshed too.'); $('#ans').value=''; };
+    $('#ans').addEventListener('input', e => {
+      if(Math.random() < 0.1 && e.target.value.length){
+        e.target.value = e.target.value.slice(0,-1);
+        toast('A character fled the scene.');
+      }
+    });
+    $('#sub').onclick = () => {
+      tries++;
+      if(tries === 1) fail('Incorrect. (We will not say why.)');
+      else if(tries === 2) fail('Incorrect. Also, you took too long. Also, you were too fast.');
+      else if(tries === 3) fail('Correct! …just kidding, that was a test. One more time.');
+      else { say('Accepted. We still do not trust you.'); setTimeout(next, 1200); }
+    };
+  }
+
+  /* ---------- STAGE 3: emotional image grid ---------- */
+  function s3(){
+    const emojis = ['🚌','🚦','🌳','🐔','🍞','🧦','🪑','☁️','🦆','🧀','🛴','🗿','📎','🪴','🦷','🧃'];
+    const prompts = [
+      'Select all squares that are NOT a bus (but could be one emotionally)',
+      'Select all squares containing the concept of Tuesday',
+      'Select all squares that would lose a fight to a goose',
+      'Select every square with a traffic light (the light itself does not count)',
+      'Select all squares that look like they have unpaid parking tickets',
+      'Select all squares that are 40% bread'
+    ];
+    stage.innerHTML =
+      '<h2>Image Verification</h2>' +
+      '<h3 id="pr"></h3><div id="grid"></div>' +
+      '<div><button class="btn big green" id="skip">SKIP</button><button class="btn tinyb" id="ver">verify</button></div>' +
+      '<p id="msg" class="tiny">Click squares. They may change their minds. So may you.</p>';
+    let verifies = 0;
+    function fill(){
+      $('#pr').textContent = pick(prompts);
+      const g = $('#grid'); g.innerHTML = '';
+      for(let i=0;i<9;i++){
+        const t = document.createElement('button');
+        t.className = 'tile'; t.textContent = pick(emojis);
+        t.onclick = () => {
+          t.classList.add('sel');
+          setTimeout(() => { t.textContent = pick(emojis); t.classList.remove('sel'); }, 700);
+        };
+        g.appendChild(t);
+      }
+    }
+    fill();
+    $('#skip').onclick = () => { fail('Skipping is a robot move. Here are 9 NEW squares as punishment.'); fill(); };
+    $('#ver').onclick = () => {
+      verifies++;
+      if(verifies === 1){ fail('Incorrect. You selected a feeling that does not exist.'); fill(); }
+      else if(verifies === 2){ fail('Almost! You missed the one that is technically a bus.'); fill(); }
+      else if(verifies === 3){ fail('Correct, but we need you to do it again. Our intern spilled coffee on the answer key.'); fill(); }
+      else { say('Fine. Passed. Please never speak of this.'); setTimeout(next, 1200); }
+    };
+  }
+
+  /* ---------- STAGE 4: philosophical check ---------- */
+  function s4(){
+    stage.innerHTML =
+      '<h2>Final Philosophical Check</h2>' +
+      '<p style="font-size:30px;color:#e0b">Are you a robot?</p>' +
+      '<div id="ch" style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn big" id="y">Yes</button><button class="btn big" id="no">No</button></div>' +
+      '<p id="msg" class="tiny">Answer honestly. Or dishonestly. We will know.</p>';
+    let n = 0;
+    const y = $('#y'), no = $('#no'), ch = $('#ch');
+    const yesMsgs = ['Honesty is a robot trait.','Thank you for admitting that. Please admit it again, louder.','A human would never confess so fast.'];
+    const noMsgs = ['That is exactly what a robot would say.','Bold claim. Unverified.','Denial detected. Denial is also a robot trait.'];
+    function handle(btn){
+      const label = btn.textContent;
+      n++;
+      fail(pick(label === 'Yes' ? yesMsgs : noMsgs));
+      const t = y.textContent; y.textContent = no.textContent; no.textContent = t;
+      ch.style.flexDirection = n % 2 ? 'row-reverse' : 'row';
+      y.style.marginLeft = rand(0,100) + 'px';
+      if(n >= 3 && !$('#mb')){
+        const m = document.createElement('button');
+        m.id = 'mb'; m.className = 'btn tinyb'; m.textContent = 'maybe';
+        m.onclick = () => { say('"Maybe" is the most human answer. Proceeding with suspicion.'); setTimeout(next, 1200); };
+        ch.appendChild(m);
+        toast('A new option appeared. Look carefully.');
+      }
+    }
+    y.onclick = () => handle(y);
+    no.onclick = () => handle(no);
+  }
+
+  /* ---------- STAGE 5: cursed slider ---------- */
+  function s5(){
+    let tries = 0, target = rand(5,95), done = false;
+    stage.innerHTML =
+      '<h2>Calibrate Your Humanity</h2>' +
+      '<p>Set the slider to exactly <b id="tg" style="font-size:26px;color:#f0f">' + target + '</b>. Release when done.</p>' +
+      '<div style="transform:scaleX(-1)"><input type="range" id="sl" min="0" max="100" step="0.01" value="50" style="width:100%;height:30px"></div>' +
+      '<p>Current: <span id="cur">50.00</span> hu (humanity units)</p>' +
+      '<p id="msg" class="tiny">The slider is feeling emotional today.</p>';
+    const sl = $('#sl');
+    sl.addEventListener('input', () => {
+      let v = +sl.value + (Math.random()*6 - 3);
+      v = Math.min(100, Math.max(0, v));
+      sl.value = v;
+      $('#cur').textContent = v.toFixed(2);
+    });
+    sl.addEventListener('change', () => {
+      if(done) return;
+      tries++;
+      const v = +sl.value;
+      if(Math.abs(v - target) <= 1){ done = true; say('Perfect. Suspiciously perfect.'); setTimeout(next, 1000); }
+      else if(tries >= 5){ done = true; say('Close enough. We are tired too.'); setTimeout(next, 1200); }
+      else {
+        fail('You got ' + v.toFixed(2) + '. We needed ' + target + '. Target has been updated for your inconvenience.');
+        target = rand(5,95); $('#tg').textContent = target;
+      }
+    });
+  }
+
+  /* ---------- STAGE 6: hold the button ---------- */
+  function s6(){
+    stage.innerHTML =
+      '<h2>Prove Your Patience</h2>' +
+      '<p>Press and <b>hold</b> the button until the bar fills. Robots lack patience. (Humans too, but less.)</p>' +
+      '<div class="bar"><div id="hb"></div></div>' +
+      '<button class="btn big" id="hold" style="touch-action:none">HOLD ME</button>' +
+      '<p id="msg" class="tiny"></p>' +
+      '<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:95;align-items:center;justify-content:center"><div class="pop">Are you still there?<br><button class="btn tinyb" id="yes">yes</button></div></div>';
+    let held = 0, iv = null, att = 0;
+    const need = () => att === 0 ? 8 : 3;
+    const hb = $('#hb'), btn = $('#hold');
+    const stop = () => { clearInterval(iv); iv = null; };
+    cleanups.push(stop);
+    btn.addEventListener('contextmenu', e => e.preventDefault());
+    btn.addEventListener('pointerdown', e => {
+      e.preventDefault(); held = 0; stop();
+      iv = setInterval(() => {
+        held += 0.1;
+        hb.style.width = Math.min(100, held/need()*100) + '%';
+        if(att === 0 && held >= 5){
+          stop(); att = 1; held = 0; hb.style.width = '0';
+          $('#modal').style.display = 'flex';
+        } else if(held >= need()){
+          stop(); say('Patience confirmed. Barely.'); setTimeout(next, 900);
+        }
+      }, 100);
+    });
+    const release = () => { if(iv){ stop(); held = 0; hb.style.width = '0'; fail('You let go. Robots let go. Humans too. Anyway: failed.'); } };
+    btn.addEventListener('pointerup', release);
+    btn.addEventListener('pointerleave', release);
+    btn.addEventListener('pointercancel', release);
+    $('#yes').onclick = () => {
+      $('#modal').style.display = 'none';
+      fail('Session timed out while you were confirming you were there. Start over (shorter this time, we promise).');
+    };
+  }
+
+  /* ---------- STAGE 7: the form ---------- */
+  function s7(){
+    stage.innerHTML =
+      '<h2>Official Humanity Application — Form 27-B/6</h2>' +
+      '<label>Full name (your real name, but not the one you use)<input class="inp" id="f1"></label>' +
+      '<label>Favorite number from 1 to 10 (must be 11)<input class="inp" id="f2"></label>' +
+      '<label>Create a secret handshake (describe it in words)<input class="inp" id="f3"></label>' +
+      '<button class="btn" id="fs">Submit (final)</button>' +
+      '<div id="errs"></div><p id="msg" class="tiny">All fields are required. Some fields are also forbidden.</p>';
+    let n = 0;
+    const E = [
+      ['Name is too human-sounding. Please use something robotic. Then something human.','Number must be 11. You entered a number. That is the problem.','Handshake needs at least 1 emoji, 1 regret and 1 tax code.'],
+      ['Error 0x80070057: name is fine, but we dislike it.','Number valid, but not like that. Like THAT.','Handshake is already taken by Gary.'],
+      ['Everything is correct. Please re-enter it exactly as before, but better.','Fields cleared for your security.','Reminder: you are being watched.']
+    ];
+    $('#fs').onclick = () => {
+      n++;
+      const box = $('#errs'); box.innerHTML = '';
+      if(n < 4){
+        fails++;
+        E[n-1].forEach(t => { const d = document.createElement('div'); d.className = 'err'; d.textContent = '✖ ' + t; box.appendChild(d); });
+        ['#f1','#f2','#f3'].forEach(s => $(s).value = '');
+        const a = $('#app'); a.classList.remove('shake'); void a.offsetWidth; a.classList.add('shake');
+      } else { say('Application approved. Processing time: 6–8 weeks. We will skip that part.'); setTimeout(next, 1400); }
+    };
+  }
+
+  /* ---------- STAGE 8: fake victory ---------- */
+  function s8(){
+    const firstTime = loops === 0;
+    stage.innerHTML =
+      '<h1 id="vt" class="ok" style="font-size:52px;text-shadow:none">✅ VERIFIED!</h1>' +
+      '<p id="vs" style="font-size:22px">You are 100% human*</p>' +
+      '<div class="bar"><div id="pb" style="width:100%"></div></div>' +
+      '<p class="tiny" id="msg">*Humanity expires in 4 seconds.</p>';
+    if(firstTime){
+      let w = 100;
+      const iv = setInterval(() => {
+        w -= 2.5; $('#pb').style.width = Math.max(0,w) + '%';
+        if(w <= 0){
+          clearInterval(iv);
+          $('#vt').textContent = '❌ HUMANITY EXPIRED';
+          $('#vt').style.color = '#e00';
+          $('#vs').textContent = 'Verification is only valid for 4 seconds. Please verify again. (Shorter version, we promise.)';
+          setBase(30);
+          const b = document.createElement('button');
+          b.className = 'btn big'; b.textContent = 'Re-Verify';
+          b.onclick = () => { loops = 1; flowIdx = 1; pos = -1; next(); };
+          stage.appendChild(b);
+        }
+      }, 100);
+      cleanups.push(() => clearInterval(iv));
+    } else {
+      $('#vs').textContent = 'You are 100% human (for real this time, trust us).';
+      $('#pb').style.width = '100%';
+      const t = setTimeout(s9, 2200);
+      cleanups.push(() => clearTimeout(t));
+    }
+  }
+
+  /* ---------- STAGE 9: the "website" ---------- */
+  function s9(){
+    cleanups.forEach(f => f()); cleanups = [];
+    setBase(12);
+    $('#step').textContent = 'You made it!';
+    stage.innerHTML =
+      '<h2 style="color:#e00">Welcome to TotallyNormalWebsite.com</h2>' +
+      '<div class="marq"><span>🚧 UNDER CONSTRUCTION SINCE 1998 🚧 THIS PAGE INTENTIONALLY LEFT BLANK 🚧</span></div>' +
+      '<p style="font-size:20px">Visitors: <b>000001</b> (you)</p>' +
+      '<p>Contents of website: <i>nothing.</i></p>' +
+      '<p class="tiny">You clicked <b>' + clicks + '</b> times and failed <b>' + fails + '</b> times to see this page. Your final humanity score is 12%. We are still not sure about you.</p>' +
+      '<button class="btn big" id="leave">Leave Website</button>' +
+      '<p id="msg" class="tiny">Leaving requires verification.</p>';
+    $('#leave').onclick = () => {
+      toast('Leaving requires re-verification. Welcome back.');
+      flowIdx = 0; pos = -1; loops = 0; stageNo = 0; humBase = 100; clicks = 0; fails = 0;
+      next();
+    };
+  }
+
+  const S = [s0,s1,s2,s3,s4,s5,s6,s7,s8,s9];
+
+  /* ---------- global annoyances ---------- */
+  document.addEventListener('click', () => clicks++);
+  document.addEventListener('contextmenu', e => { e.preventDefault(); toast('Right-clicking is a robot behavior.'); });
+
+  setInterval(() => {
+    const v = Math.max(1, Math.min(100, humBase + rand(-14,14)));
+    $('#hum').style.width = v + '%';
+    $('#humtxt').textContent = v + '%';
+  }, 1200);
+
+  let q = 4382;
+  setInterval(() => {
+    q += rand(-3,5);
+    $('#queue').textContent = 'You are #' + q.toLocaleString() + ' in line. Estimated wait: ' + pick(['3–5 business years','a long time','forever-ish','2 more minutes (always)']) + '.';
+  }, 4000);
+
+  const nags = [
+    'A user in your area just failed. Don’t be like them.',
+    'Gary (Human #4821): hi are u a bot? 🤖',
+    '3 robots tried to enter in the last minute. You look similar.',
+    'Reminder: blinking too much is suspicious.',
+    'Your humanity score is being reviewed by a committee of toasters.',
+    'Tip: Being a human is easy. Just be 1 human.'
+  ];
+  setInterval(() => toast(pick(nags)), 14000);
+
+  /* cookie banner returns */
+  function hideCookie(){
+    $('#cookie').style.display = 'none';
+    setTimeout(() => {
+      $('#cookie').style.display = 'flex';
+      $('#cookie').querySelector('span').textContent = '🍪 We updated our cookies. They are now crunchier. Please accept again.';
+    }, 20000);
+  }
+  $('#ck1').onclick = hideCookie;
+  $('#ck2').onclick = hideCookie;
+  $('#cx').addEventListener('mouseenter', e => {
+    e.target.style.right = rand(6,300) + 'px';
+    e.target.style.top = rand(2,30) + 'px';
+  });
+
+  /* Easy Mode (not easy) */
+  let em = 0;
+  $('#easy').onclick = () => {
+    em = (em + 1) % 3;
+    const a = $('#app');
+    a.classList.remove('r1','r2');
+    if(em === 1){ a.classList.add('r1'); toast('Easy Mode ON: now 20% more upside down.'); }
+    if(em === 2){ a.classList.add('r2'); toast('Easy Mode ON+: now sideways. Better?'); }
+    if(em === 0){ toast('Easy Mode off. (It is still on.)'); }
+  };
+  $('#help').onclick = () => toast(pick(['Help is a robot feature.','Please hold while we ignore you.','Your call is important to us. It is also on fire.']));
+
+  /* title that guilt-trips */
+  const baseTitle = document.title;
+  document.addEventListener('visibilitychange', () => {
+    document.title = document.hidden ? 'Come back. We saw that. 👀' : baseTitle;
+  });
+  const titles = ['Are you human? 🤔','Are you SURE? 🤨','Prove it. 🧐', baseTitle];
+  let ti = 0; setInterval(() => { if(!document.hidden) document.title = titles[ti++ % titles.length]; }, 3000);
+
+  /* laggy cursor buddy */
+  const tr = $('#trail'); let mx = 0, my = 0, tx = 0, ty = 0;
+  addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  (function loop(){
+    tx += (mx - tx) * 0.08; ty += (my - ty) * 0.08;
+    tr.style.transform = 'translate(' + (tx+14) + 'px,' + (ty+14) + 'px)';
+    requestAnimationFrame(loop);
+  })();
+
+  /* demo skip for judges: Alt + N jumps to the next stage */
+  document.addEventListener('keydown', e => {
+    if(e.altKey && e.key.toLowerCase() === 'n'){ e.preventDefault(); next(); }
+  });
+
+  next();
+})();
+</script>
+</body>
+</html>
